@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search NYC Address, Return Neighborhood</title>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.js"></script>
+    <!-- geocoder -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.css" rel="stylesheet" />
+    <!-- geocoder -->
+    <link
+      rel="stylesheet"
+      href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css"
+      type="text/css"
+    />
+    <link href="./style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="description-box" class="description-box"></div>
+    <button class="recenter"></button>
+
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="./map.js"></script>
+    <script src="https://kit.fontawesome.com/c1c795151c.js" crossorigin="anonymous"></script>
+  </body>
+</html>
