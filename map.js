@@ -146,7 +146,11 @@ function init() {
     // when clicking a neighborhood, popup gives name
     // https://docs.mapbox.com/mapbox-gl-js/example/polygon-popup-on-click/
     map.on("click", "neighborhoods-layer", e => {
-      new mapboxgl.Popup().setLngLat(e.lngLat).setHTML(e.features[0].properties.neighborhood).addTo(map);
+      new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(e.features[0].properties.neighborhood)
+        .addTo(map)
+        .addClassName("click-popup");
     });
 
     // change cursor to hand pointer when mouse is over a neighborhood
@@ -186,7 +190,9 @@ function init() {
       closeOnClick: false,
     });
 
-    popup.addClassName("hover-popup"); // https://docs.mapbox.com/mapbox-gl-js/api/markers/#popup#addclassname
+    // add popup container class
+    // https://docs.mapbox.com/mapbox-gl-js/api/markers/#popup#addclassname
+    popup.addClassName("hover-popup");
 
     // listen for event from geocoder (i.e. user enters location)
     // zoom in / fly to location and add marker
@@ -214,14 +220,27 @@ function init() {
         center: e.result.geometry.coordinates,
       });
 
+      // show corresponding neighborhood in description box
+      const inputLngLat = e.result.geometry.coordinates;
+      // console.log(`Mapbox says ${e.result.context[0].text}`); // works with text input not coordinate input data
+
+      const inputNabe = neighborhoodsData.features.filter(d => d3.geoContains(d, e.result.geometry.coordinates))[0]
+        .properties.neighborhood;
+      // description msg gives neighbhorhood unless loc is outside NYC
+      if (d3.geoContains(neighborhoodsData, inputLngLat)) {
+        description.innerHTML = `<span style="font-weight: 400;">Neighborhood:</span> <span style='color:#e7b10a;'>${inputNabe}</span>`;
+      } else {
+        description.innerHTML = `This location is outside of NYC`;
+      }
+
       map
         .on("mouseenter", "single", () => {
           popup
             .setLngLat(e.result.geometry.coordinates)
             .setHTML(
-              `<span style="font-size: 0.75em;">YOU SEARCHED FOR</span><br /><span style="font-weight:800;">${e.result.place_name.match(
+              `<span style="font-size: 0.85em;">YOU SEARCHED FOR</span><br /><span style="font-weight:800;">${e.result.place_name.match(
                 /^[^,]*/
-              )}</span>`
+              )}</span><div id="hover-popup-mobile"><hr class="popup-line" /><span style="font-size: 0.85em;">IT IS LOCATED IN</span><br /><span class="hover-nabe">${inputNabe}</span></div>`
             )
             .addTo(map);
         })
@@ -232,19 +251,6 @@ function init() {
       // add recenter map button
       if (e.result.geometry.coordinates[0] != nycCoords[0] && e.result.geometry.coordinates[1] != nycCoords[1]) {
         document.querySelector(".recenter").setAttribute("style", "visibility: visible");
-      }
-
-      // show corresponding neighborhood in description box
-      const inputLngLat = e.result.geometry.coordinates;
-      // console.log(`Mapbox says ${e.result.context[0].text}`); // works with text input not coordinate input data
-
-      // description msg gives neighbhorhood unless loc is outside NYC
-      if (d3.geoContains(neighborhoodsData, inputLngLat)) {
-        const inputNabe = neighborhoodsData.features.filter(d => d3.geoContains(d, e.result.geometry.coordinates))[0]
-          .properties.neighborhood;
-        description.innerHTML = `<span style="font-weight: 400;">Neighborhood:</span> <span style='color:#e7b10a;'>${inputNabe}</span>`;
-      } else {
-        description.innerHTML = `This location is outside of NYC`;
       }
 
       // when user clicks button
