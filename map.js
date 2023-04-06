@@ -9,6 +9,10 @@ async function loadData() {
 loadData();
 
 function init() {
+  // mobile intro msg
+  const introMobile = document.querySelector("#intro-mobile");
+  introMobile.innerHTML = `Enter a NYC address to find its neighborhood`;
+
   mapboxgl.accessToken = "pk.eyJ1IjoiamVuY2hlIiwiYSI6ImNsZzFvZG5iczFtb2cza3M2NXBpcjg3YWkifQ.8kRUHSY7dqxOwHXh5F00Qg";
 
   /*-----------
@@ -170,6 +174,9 @@ function init() {
     // recenter map button appears when user drags map
     map.on("movestart", () => {
       if (map.getCenter().lng !== nycCoords[0] && map.getCenter().lat !== nycCoords[1]) {
+        // hide mobile intro msg
+        introMobile.setAttribute("style", "visibility: hidden");
+
         document.querySelector(".recenter").setAttribute("style", "visibility: visible");
       }
     });
@@ -250,6 +257,9 @@ function init() {
 
       // add recenter map button
       if (e.result.geometry.coordinates[0] != nycCoords[0] && e.result.geometry.coordinates[1] != nycCoords[1]) {
+        // hide mobile intro msg
+        introMobile.setAttribute("style", "visibility: hidden");
+
         document.querySelector(".recenter").setAttribute("style", "visibility: visible");
       }
 
@@ -264,20 +274,20 @@ function init() {
     // recenter/recenter map button
     const recenter = document.querySelector(".recenter");
     recenter.innerHTML = `RECENTER MAP&nbsp; <span style="color:#E7B10A;"><i class="fa-solid fa-arrows-rotate"></i></span>`;
-    recenter.addEventListener("click", function (e) {
-      recenterMap();
-    });
 
-    function recenterMap() {
+    recenter.addEventListener("click", () => {
       const centerPt = new mapboxgl.LngLat(nycCoords[0], nycCoords[1]);
+
       map.flyTo({
         zoom: 10, // smooth zoom
         center: centerPt,
       });
       geocoder.clear();
 
+      // reshow initial msg in top left
       description.innerHTML = startMsg;
-      document.querySelector(".recenter").setAttribute("style", "visibility: hidden");
-    }
+
+      recenter.setAttribute("style", "visibility: hidden");
+    });
   });
 }
