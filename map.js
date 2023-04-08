@@ -231,13 +231,19 @@ function init() {
       const inputLngLat = e.result.geometry.coordinates;
       // console.log(`Mapbox says ${e.result.context[0].text}`); // works with text input not coordinate input data
 
-      const inputNabe = neighborhoodsData.features.filter(d => d3.geoContains(d, e.result.geometry.coordinates))[0]
-        .properties.neighborhood;
+      const checkNYC = d3.geoContains(neighborhoodsData, inputLngLat);
+
+      const inputNabe = checkNYC
+        ? neighborhoodsData.features.filter(d => d3.geoContains(d, e.result.geometry.coordinates))[0].properties
+            .neighborhood
+        : null;
+
+      console.log(e.result);
       // description msg gives neighbhorhood unless loc is outside NYC
-      if (d3.geoContains(neighborhoodsData, inputLngLat)) {
+      if (checkNYC) {
         description.innerHTML = `<span style="font-weight: 400;">Neighborhood:</span> <span style='color:#e7b10a;'>${inputNabe}</span>`;
       } else {
-        description.innerHTML = `This location is outside of NYC`;
+        description.innerHTML = `<span style='color:#e7b10a;font-weight:normal;'>This location is outside of NYC</span>`;
       }
 
       map
@@ -245,9 +251,13 @@ function init() {
           popup
             .setLngLat(e.result.geometry.coordinates)
             .setHTML(
-              `<span style="font-size: 0.85em;">YOU SEARCHED FOR</span><br /><span style="font-weight:800;">${e.result.place_name.match(
-                /^[^,]*/
-              )}</span><div id="hover-popup-mobile"><hr class="popup-line" /><span style="font-size: 0.85em;">IT IS LOCATED IN</span><br /><span class="hover-nabe">${inputNabe}</span></div>`
+              checkNYC
+                ? `<span style="font-size: 0.85em;">YOU SEARCHED FOR</span><br /><span style="font-weight:800;">${e.result.place_name.match(
+                    /^[^,]*/
+                  )}</span><div id="hover-popup-mobile"><hr class="popup-line" /><span style="font-size: 0.85em;">IT IS LOCATED IN</span><br /><span class="hover-nabe">${inputNabe}</span></div>`
+                : `<span style="font-size: 0.85em;">YOU SEARCHED FOR</span><br /><span style="font-weight:800;">${e.result.place_name.match(
+                    /^[^,]*/
+                  )}</span></div>`
             )
             .addTo(map);
         })
