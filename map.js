@@ -128,7 +128,7 @@ function init() {
           "Staten Island",
           "#FF6000", //"#EE5007",
           "Brooklyn",
-          "#539165", //"#F8CB2E",
+          "#009FBD", //"#539165", //"#F8CB2E",
           "transparent", // always include a value for none of the above
         ],
         "fill-opacity": 0.4,
